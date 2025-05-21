@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Pop-fizz is a basic physics engine written in C++.
+Pop-fizz is a basic game engine written in C++.
 We use GLFW and OpenGL for rendering.
 
 
