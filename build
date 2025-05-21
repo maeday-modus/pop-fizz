@@ -1,0 +1,69 @@
+#!/bin/bash
+
+## --- CONFIG --- ##
+
+SRC_PATHS=("./src" "./vendor/glad/src")
+INCLUDE_PATHS=("/usr/include" "vendor/glad/include")
+LINK_PATHS=("/usr/lib")
+BIN_FILE="./bin/pop-fizz"
+CUSTOM_ARGS="-lglfw"
+
+## --- FUNCITONS --- ##
+function yes_or_no {
+    while true; do
+        read -p "$* [y/n]: " yn
+        case $yn in
+            [Yy]*) return 0  ;;  
+            [Nn]*) echo "Aborted" ; return  1 ;;
+        esac
+    done
+}
+
+## --- BUILD --- ##
+
+# Get all the cpp files in the source directory
+echo "Gathering source files..."
+SRC_FILES=""
+for path in "${SRC_PATHS[@]}"; do
+    echo "==> Checking \"$path\""
+    SRC_FILES="$SRC_FILES $(find $path -type f \( -iname \*.cpp -o -iname \*.c \) | tr '\n' ' ')"
+done
+
+# Put together include and lib directories
+echo "Gathering includes..."
+INCLUDES=""
+for path in "${INCLUDE_PATHS[@]}"; do
+    echo "==> Including \"$path\""
+    INCLUDES="$INCLUDES -I$path"
+done
+
+echo "Gathering links..."
+LINKS=""
+for path in "${LINK_PATHS[@]}"; do
+    echo "==> Linking \"$path\""
+    LINKS="$LINKS -L$path"
+done
+
+
+# Start the build
+echo "Starting build..."
+BUILD_CMD="clang++ $SRC_FILES -o $BIN_FILE $INCLUDES $LINKS $CUSTOM_ARGS"
+# log the build command for debug
+echo "$BUILD_CMD" > .build.log
+# finally run it
+`$BUILD_CMD`
+
+## --- RUN --- ##
+# Check that clang compiled successfully
+SUCCESS=$?
+if [ $SUCCESS == '0' ]; then
+    echo "----- BUILD SUCCESS -----"
+    echo -e "Running application...\n"
+    clear
+    # Success!, run the newly built file
+    exec "$BIN_FILE"
+else
+    echo "----- BUILD FAILURE -----"
+    # Build failed. Ask the user if they want to run the last build anyway
+    yes_or_no "Do you want to run last build anyway?" && (echo -e "\n"; exec "$BIN_FILE")
+fi
