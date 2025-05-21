@@ -7,9 +7,17 @@ We use GLFW and OpenGL for rendering.
 
 
 ## Building:
-
-Simply run the `build.sh` script:
+Clone the repository
 ```bash
-$ ./build.sh
+git clone https://github.com/MiniFalafel/pop-fizz.git pop-fizz
+cd pop-fizz
 ```
 
+#### Build dependencies:
+*   `clang`
+*   `glfw`
+
+Run the `build` script:
+```bash
+$ ./build
+```

@@ -8,6 +8,8 @@ LINK_PATHS=("/usr/lib")
 BIN_FILE="./bin/pop-fizz"
 CUSTOM_ARGS="-lglfw"
 
+LOG_FILE=".build.log"
+
 ## --- FUNCITONS --- ##
 function yes_or_no {
     while true; do
@@ -19,7 +21,23 @@ function yes_or_no {
     done
 }
 
+## --- RUN IF NO CHANGES -- ##
+# highjacking git for this now that we're in a repo
+THIS_COMMIT="NO_GIT_SUPPORT"
+if [[ $(type -p git) ]]; then
+    THIS_COMMIT="$(git log | head -n 1 | awk '{print $2}')"
+    LAST_BUILD="$(head -n 1 $LOG_FILE)"
+    if [[ ! `git status --porcelain` && $THIS_COMMIT == $LAST_BUILD ]]; then
+        echo "No recent changes! Running last build..."
+        exec "$BIN_FILE"
+        exit
+    fi
+fi
+
 ## --- BUILD --- ##
+
+# update log file
+echo "$THIS_COMMIT" > $LOG_FILE
 
 # Get all the cpp files in the source directory
 echo "Gathering source files..."
@@ -49,7 +67,7 @@ done
 echo "Starting build..."
 BUILD_CMD="clang++ $SRC_FILES -o $BIN_FILE $INCLUDES $LINKS $CUSTOM_ARGS"
 # log the build command for debug
-echo "$BUILD_CMD" > .build.log
+echo "$BUILD_CMD" >> $LOG_FILE
 # finally run it
 `$BUILD_CMD`
 
@@ -59,7 +77,6 @@ SUCCESS=$?
 if [ $SUCCESS == '0' ]; then
     echo "----- BUILD SUCCESS -----"
     echo -e "Running application...\n"
-    clear
     # Success!, run the newly built file
     exec "$BIN_FILE"
 else
