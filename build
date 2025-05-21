@@ -22,22 +22,27 @@ function yes_or_no {
 }
 
 ## --- RUN IF NO CHANGES -- ##
-# highjacking git for this now that we're in a repo
-THIS_COMMIT="NO_GIT_SUPPORT"
-if [[ $(type -p git) ]]; then
-    THIS_COMMIT="$(git log | head -n 1 | awk '{print $2}')"
-    LAST_BUILD="$(head -n 1 $LOG_FILE)"
-    if [[ ! `git status --porcelain` && $THIS_COMMIT == $LAST_BUILD ]]; then
-        echo "No recent changes! Running last build..."
+echo "Generating source hash..."
+
+if [[ $(type -p sha256sum) && $1 != "-f" ]]; then
+    _ALL_SOURCE_PATHS=""
+    for path in "${SRC_PATHS[@]}"; do
+        _ALL_SOURCE_PATHS="$path $_ALL_SOURCE_PATHS"
+    done
+    THIS_HASH="$(find $_ALL_SOURCE_PATHS -type f -exec sha256sum \"{}\" \\\; | sha256sum)"
+    LAST_HASH="$(head -n 1 $LOG_FILE)"
+
+    if [[ $THIS_HASH == $LAST_HASH && $1 != "-f" ]]; then
+        echo "No changes detected. Running last build."
         exec "$BIN_FILE"
         exit
     fi
+
+    # update log file
+    echo "$THIS_HASH" > $LOG_FILE
 fi
 
 ## --- BUILD --- ##
-
-# update log file
-echo "$THIS_COMMIT" > $LOG_FILE
 
 # Get all the cpp files in the source directory
 echo "Gathering source files..."

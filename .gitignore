@@ -1,3 +1,4 @@
 # Build related files
 bin/
+.ccls-cache/
 .build.log
