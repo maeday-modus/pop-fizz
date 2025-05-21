@@ -1,4 +1,4 @@
-#include "renderer.h"
+#include "renderer.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

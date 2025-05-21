@@ -1,5 +1,5 @@
-#include "shader.h"
-#include "../logger.h"
+#include "shader.hpp"
+#include "../logger.hpp"
 
 #include <glad/glad.h>
 
@@ -50,6 +50,5 @@ namespace fizz
             Logger::LogERROR(infoLog);
         }
     }
-    
 }
 

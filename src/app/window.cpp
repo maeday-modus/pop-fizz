@@ -1,15 +1,11 @@
-
-#include "window.h"
-#include "gfx/renderer.h"
+#include "window.hpp"
+#include "gfx/renderer.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <iostream>
-
 namespace fizz
 {
-
     class GLFW
     {
         static bool s_Initialized;

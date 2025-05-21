@@ -1,4 +1,4 @@
-#include "logger.h"
+#include "logger.hpp"
 
 #include <iostream>
 #include <csignal>
@@ -52,6 +52,4 @@ namespace fizz
         if (level <= s_LogLevel)
             std::cout << "[" << s_LogColors[s_Colors[level]] << tag << s_LogColors[LoggerColor::NORMAL] << "]::" << message << std::endl;
     }
-
-
 }

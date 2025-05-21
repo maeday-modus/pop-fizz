@@ -1,6 +1,6 @@
-
-#include "app/application.h"
-#include "app/gfx/renderer.h"
+#include "app/logger.hpp"
+#include "app/application.hpp"
+#include "app/gfx/renderer.hpp"
 
 class MyApp : public fizz::Application
 {

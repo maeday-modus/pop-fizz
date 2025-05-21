@@ -29,7 +29,9 @@ if [[ $(type -p sha256sum) && $1 != "-f" ]]; then
     for path in "${SRC_PATHS[@]}"; do
         _ALL_SOURCE_PATHS="$path $_ALL_SOURCE_PATHS"
     done
-    THIS_HASH="$(find $_ALL_SOURCE_PATHS -type f -exec sha256sum \"{}\" \\\; | sha256sum)"
+    echo $_ALL_SOURCE_PATHS
+
+    THIS_HASH="$(find $_ALL_SOURCE_PATHS -type f -exec sha256sum {} \; | sha256sum)"
     LAST_HASH="$(head -n 1 $LOG_FILE)"
 
     if [[ $THIS_HASH == $LAST_HASH && $1 != "-f" ]]; then
