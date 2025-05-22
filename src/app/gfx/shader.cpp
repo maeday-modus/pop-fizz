@@ -5,11 +5,25 @@
 
 namespace fizz
 {
-    uint32_t compileShader(const char* shaderCode, uint32_t type)
-    {
+    uint32_t compileShader(const char* shaderCode, ShaderType type)
+    {   // Resolve OpenGL type
+        uint32_t glType;
+        switch(type)
+        {
+            case ShaderType::VERTEX:
+                glType = GL_VERTEX_SHADER;
+            case ShaderType::GEOMETRY:
+                glType = GL_GEOMETRY_SHADER;
+            case ShaderType::FRAGMENT:
+                glType = GL_FRAGMENT_SHADER;
+            case ShaderType::COMPUTE:
+                glType = GL_COMPUTE_SHADER;
+        }
+
         uint32_t shader;
-        shader = glCreateShader(type);
+        shader = glCreateShader(glType);
         glShaderSource(shader, 1, &shaderCode, nullptr);
+        glCompileShader(shader);
 
         int success;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
@@ -24,7 +38,7 @@ namespace fizz
     }
 
     // ShaderPart class
-    ShaderPart::ShaderPart(const char* shaderCode, uint32_t type)
+    ShaderPart::ShaderPart(const char* shaderCode, ShaderType type)
         : ID(compileShader(shaderCode, type)) {}
 
     ShaderPart::~ShaderPart()
@@ -35,8 +49,8 @@ namespace fizz
     // Shader class
     Shader::Shader(const char* vertexCode, const char* fragmentCode)
     {
-        ShaderPart vertShader(vertexCode, GL_VERTEX_SHADER);
-        ShaderPart fragShader(fragmentCode, GL_FRAGMENT_SHADER);
+        ShaderPart vertShader(vertexCode, ShaderType::VERTEX);
+        ShaderPart fragShader(fragmentCode, ShaderType::FRAGMENT);
 
         m_Program = glCreateProgram();
         glAttachShader(m_Program, vertShader.ID);
@@ -50,6 +64,11 @@ namespace fizz
             glGetProgramInfoLog(m_Program, 512, nullptr, infoLog);
             Logger::LogERROR(infoLog);
         }
+    }
+
+    // ComputeShader class
+    ComputeShader::ComputeShader(const char* shaderSource)
+    {
     }
 }
 
