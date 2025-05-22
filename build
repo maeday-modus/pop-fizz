@@ -3,7 +3,7 @@
 ## --- CONFIG --- ##
 
 SRC_PATHS=("./src" "./vendor/glad/src")
-INCLUDE_PATHS=("/usr/include" "vendor/glad/include")
+INCLUDE_PATHS=("/usr/include" "_SCRIPT_DIR_/vendor/glad/include")
 LINK_PATHS=("/usr/lib")
 BIN_FILE="./bin/pop-fizz"
 CUSTOM_ARGS="-lglfw"
@@ -45,6 +45,7 @@ if [[ $(type -p sha256sum) && $1 != "-f" ]]; then
 fi
 
 ## --- BUILD --- ##
+SCRIPT_DIR=$(pwd)
 
 # Get all the cpp files in the source directory
 echo "Gathering source files..."
@@ -61,6 +62,8 @@ for path in "${INCLUDE_PATHS[@]}"; do
     echo "==> Including \"$path\""
     INCLUDES="$INCLUDES -I$path"
 done
+# Resolve relative paths
+INCLUDES=$(echo $INCLUDES | sed "s#_SCRIPT_DIR_#$SCRIPT_DIR#g")
 
 echo "Gathering links..."
 LINKS=""
@@ -68,6 +71,19 @@ for path in "${LINK_PATHS[@]}"; do
     echo "==> Linking \"$path\""
     LINKS="$LINKS -L$path"
 done
+# Resolve relative paths
+LINKS=$(echo $LINKS | sed "s#_SCRIPT_DIR_#$SCRIPT_DIR#g")
+
+# Custom args
+# Resolve relative paths
+CUSTOM_ARGS=$(echo $CUSTOM_ARGS | sed "s#_SCRIPT_DIR_#$SCRIPT_DIR#g")
+
+# write a new ".clangd" file for lsp
+LSP_FILE=".clangd"
+echo "CompileFlags:" > $LSP_FILE
+echo "    Compiler: clang++" >> $LSP_FILE
+echo "    Add: [ $(echo $INCLUDES $LINKS $CUSTOM_ARGS | sed 's/\(\w\) /\1, /g') ]" \
+    >> $LSP_FILE
 
 
 # Start the build
