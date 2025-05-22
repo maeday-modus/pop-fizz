@@ -2,3 +2,4 @@
 bin/
 .ccls-cache/
 .build.log
+.clangd

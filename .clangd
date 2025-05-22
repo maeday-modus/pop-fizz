@@ -1,3 +1,0 @@
-CompileFlags:
-    Compiler: clang++
-    Add: [-I/usr/include, -I/home/eli/DEV/GAMES/pop-fizz/vendor/glad/include, -L/usr/lib/, -lglfw]
