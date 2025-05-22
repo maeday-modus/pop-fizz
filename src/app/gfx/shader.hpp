@@ -4,7 +4,7 @@
 
 namespace fizz
 {
-    
+    // RENDERING SHADERS
     static uint32_t compileShader(const char* shaderCode);
 
     class ShaderPart
@@ -24,5 +24,4 @@ namespace fizz
     private:
         uint32_t m_Program;
     };
-
 }

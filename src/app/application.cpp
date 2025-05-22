@@ -5,7 +5,6 @@
 
 namespace fizz
 {
-    
     Application::Application(const char* title, unsigned int width, unsigned int height)
         : m_Window(title, width, height)
     {
@@ -30,6 +29,5 @@ namespace fizz
             m_Window.SwapPoll();
         }
     }
-
 }
 

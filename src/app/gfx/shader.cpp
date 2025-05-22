@@ -23,7 +23,7 @@ namespace fizz
         return shader;
     }
 
-    // ShaderPart CLASS METHODS
+    // ShaderPart class
     ShaderPart::ShaderPart(const char* shaderCode, uint32_t type)
         : ID(compileShader(shaderCode, type)) {}
 
@@ -32,6 +32,7 @@ namespace fizz
         glDeleteShader(ID);
     }
 
+    // Shader class
     Shader::Shader(const char* vertexCode, const char* fragmentCode)
     {
         ShaderPart vertShader(vertexCode, GL_VERTEX_SHADER);

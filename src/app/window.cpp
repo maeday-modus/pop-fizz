@@ -20,7 +20,7 @@ namespace fizz
                 
                 // Window hints probably don't need to be here, but This will make all of our windows have the same hints
                 glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-                glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+                glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
                 // For whatever reason, this causes a runtime error where the window fails to create.
                 //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
             }

@@ -5,7 +5,6 @@
 
 namespace fizz
 {
-    
     enum class LogLevel
     {
         NONE = 0,
@@ -43,5 +42,4 @@ namespace fizz
         static std::map<LoggerColor, const char*> s_LogColors;
 
     };
-
 }
