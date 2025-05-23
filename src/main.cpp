@@ -1,6 +1,6 @@
 #include "app/logger.hpp"
 #include "app/application.hpp"
-#include "app/gfx/renderer.hpp"
+#include "app/gpu/renderer.hpp"
 
 class MyApp : public fizz::Application
 {

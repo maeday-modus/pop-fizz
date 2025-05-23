@@ -1,5 +1,5 @@
 #include "window.hpp"
-#include "gfx/renderer.hpp"
+#include "gpu/renderer.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

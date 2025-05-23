@@ -1,6 +1,6 @@
 #include "logger.hpp"
 #include "application.hpp"
-#include "gfx/renderer.hpp"
+#include "gpu/renderer.hpp"
 
 
 namespace fizz
