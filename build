@@ -3,7 +3,7 @@
 ## --- CONFIG --- ##
 
 SRC_PATHS=("./src" "./vendor/glad/src")
-INCLUDE_PATHS=("/usr/include" "_SCRIPT_DIR_/vendor/glad/include")
+INCLUDE_PATHS=("/usr/include" "_SCRIPT_DIR_/src/app" "_SCRIPT_DIR_/vendor/glad/include")
 LINK_PATHS=("/usr/lib")
 BIN_FILE="./bin/pop-fizz"
 CUSTOM_ARGS="-std=c++17 -lglfw"

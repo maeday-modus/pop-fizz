@@ -1,6 +1,10 @@
 #pragma once
 
+#include "datatype.hpp"
+
 #include <stdint.h>
+#include <vector>
+#include <string>
 
 namespace fizz
 {
@@ -14,6 +18,14 @@ namespace fizz
         STATIC, DYNAMIC
     };
 
+    struct BufferElement
+    {
+        std::string Name;
+        DataType Type;
+        bool Normalized;
+        uint32_t Count;
+    };
+
     class Buffer
     {
         uint32_t m_ID;
@@ -22,7 +34,12 @@ namespace fizz
         uint32_t m_Size;
 
     public:
-        Buffer(BufferType type, BufferMode mode, uint32_t size);
+        Buffer(BufferType type, BufferMode mode);
+        ~Buffer();
+        void SetLayout(const std::vector<BufferElement>& layout);
+        void SetData(void* data, uint32_t size);
+        void InsertData(void* data, uint32_t offset, uint32_t size) const;
+
         inline void Bind() const;
         inline void Unbind() const;
 

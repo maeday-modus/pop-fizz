@@ -1,10 +1,11 @@
 #include "buffer.hpp"
+#include "logger.hpp"
 
 #include <glad/glad.h>
 
 namespace fizz
 {
-    static uint32_t GetGLType(BufferType type)
+    static uint32_t GetGLType(const BufferType& type)
     {
         uint32_t r;
         switch(type)
@@ -23,7 +24,7 @@ namespace fizz
         return r;
     }
 
-    static uint32_t GetGLMode(BufferMode mode)
+    static uint32_t GetGLMode(const BufferMode& mode)
     {
         uint32_t r;
         switch(mode)
@@ -35,16 +36,71 @@ namespace fizz
         }
         return r;
     }
-    
-    Buffer::Buffer(BufferType type, BufferMode mode, uint32_t size)
-        : m_Type(type), m_Mode(mode), m_Size(size)
-    {   // Resolve OpenGL types
-        uint32_t glType = GetGLType(type);
-        uint32_t glMode = GetGLMode(mode);
 
-        // create opengl buffer object
+    static uint32_t GetGLDataType(const DataType& type)
+    {
+        switch (type)
+        {
+            case DataType::Uint:
+                return GL_UNSIGNED_INT;
+            case DataType::Int:
+                return GL_INT;
+            case DataType::Bool:
+                return GL_BOOL;
+            case DataType::Float: case DataType::Mat2: case DataType::Mat3: case DataType::Mat4:
+                return GL_FLOAT;
+
+        }
+    }
+
+    Buffer::Buffer(BufferType type, BufferMode mode)
+        : m_Type(type), m_Mode(mode), m_Size(0)
+    {   // create opengl buffer object
         glCreateBuffers(1, &m_ID);
-        glBufferData(glType, size, nullptr, glMode);
+    }
+
+    Buffer::~Buffer()
+    {   // free vram
+        glDeleteBuffers(1, &m_ID);
+    }
+
+    void Buffer::SetLayout(const std::vector<BufferElement>& layout)
+    {   // calculate stride
+        uint32_t stride;
+        for (const BufferElement& element : layout)
+            stride += element.Count * DataTypeUtil::GetSize(element.Type);
+
+        Bind();
+        // map elements
+        int i = 0;
+        uint32_t offset = 0;
+        for (const BufferElement& element : layout)
+        {
+            glEnableVertexAttribArray(i);
+            glVertexAttribPointer(i, element.Count, GetGLDataType(element.Type),
+                    element.Normalized ? GL_TRUE : GL_FALSE, stride, (void*)offset);
+            i++;
+        }
+    }
+
+    void Buffer::SetData(void* data, uint32_t size)
+    {   // Set new size
+        m_Size = size;
+
+        Bind();
+        glBufferData(GetGLType(m_Type), m_Size, data, GetGLMode(m_Mode));
+    }
+
+    void Buffer::InsertData(void* data, uint32_t offset, uint32_t size) const
+    {   // check size
+        if (offset + size > m_Size)
+        {
+            Logger::LogWARN("Requested buffer insertion would overflow buffer. Data not sent to GPU.");
+            return;
+        }
+
+        Bind();
+        glBufferSubData(GetGLType(m_Type), offset, size, data);
     }
 
     inline void Buffer::Bind() const
