@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <vector>
 
 namespace fizz
 {
@@ -9,33 +10,29 @@ namespace fizz
         VERTEX, GEOMETRY, FRAGMENT,
         COMPUTE
     };
-
-    static uint32_t compileShader(const char* shaderCode, ShaderType type);
     
-    // RENDERING SHADERS
     class ShaderPart
     {
     public:
         ShaderPart(const char* shaderCode, ShaderType type);
         ~ShaderPart();
+
+        static uint32_t compileShader(const char* shaderCode, ShaderType type);
         
         uint32_t ID;
+    };
+
+
+    struct ShaderParam
+    {
+        ShaderType Type;
+        const char* Source;
     };
 
     class Shader
     {
     public:
-        Shader(const char* vertexSource, const char* fragmentSource);
-
-    private:
-        uint32_t m_Program;
-    };
-
-    // COMPUTE SHADER
-    class ComputeShader
-    {
-    public:
-        ComputeShader(const char* shaderSource);
+        Shader(std::vector<ShaderParam> shaderLayout);
 
     private:
         uint32_t m_Program;

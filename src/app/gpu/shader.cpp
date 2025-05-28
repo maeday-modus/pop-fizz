@@ -1,11 +1,11 @@
 #include "shader.hpp"
-#include "../logger.hpp"
 
+#include "logger.hpp"
 #include <glad/glad.h>
 
 namespace fizz
 {
-    uint32_t compileShader(const char* shaderCode, ShaderType type)
+    uint32_t ShaderPart::compileShader(const char* shaderCode, ShaderType type)
     {   // Resolve OpenGL type
         uint32_t glType;
         switch(type)
@@ -31,7 +31,7 @@ namespace fizz
         {
             char infoLog[512];
             glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-            Logger::LogERROR(infoLog);
+            Logger::LogWARN(infoLog);
         }
 
         return shader;
@@ -47,14 +47,22 @@ namespace fizz
     }
 
     // Shader class
-    Shader::Shader(const char* vertexCode, const char* fragmentCode)
-    {
-        ShaderPart vertShader(vertexCode, ShaderType::VERTEX);
-        ShaderPart fragShader(fragmentCode, ShaderType::FRAGMENT);
-
+    Shader::Shader(std::vector<ShaderParam> shaderLayout)
+    {   // create the program
         m_Program = glCreateProgram();
-        glAttachShader(m_Program, vertShader.ID);
-        glAttachShader(m_Program, fragShader.ID);
+
+        // create shader objects
+        std::vector<ShaderPart> shaders;
+        shaders.reserve(shaderLayout.size());
+        for (const ShaderParam& param : shaderLayout)
+            shaders.emplace_back(param.Source, param.Type);
+
+        // attach shader parts
+        for (ShaderPart& shader : shaders)
+            glAttachShader(m_Program, shader.ID);
+
+        // link and check errs
+        glLinkProgram(m_Program);
 
         int success;
         glGetProgramiv(m_Program, GL_LINK_STATUS, &success);
@@ -64,11 +72,7 @@ namespace fizz
             glGetProgramInfoLog(m_Program, 512, nullptr, infoLog);
             Logger::LogERROR(infoLog);
         }
-    }
 
-    // ComputeShader class
-    ComputeShader::ComputeShader(const char* shaderSource)
-    {
     }
 }
 
