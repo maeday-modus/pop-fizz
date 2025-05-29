@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdint.h>
 
 typedef struct GLFWwindow GLFWwindow;
 
@@ -18,6 +19,8 @@ namespace fizz
         const char* m_Title;
         unsigned int m_Width, m_Height;
         GLFWwindow* m_NativeWindow;
+
+        static void ResizeCallback(GLFWwindow* window, int width, int height);
     };
 }
 

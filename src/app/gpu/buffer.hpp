@@ -18,33 +18,28 @@ namespace fizz
         STATIC, DYNAMIC
     };
 
-    struct BufferElement
-    {
-        std::string Name;
-        DataType Type;
-        bool Normalized;
-        uint32_t Count;
-    };
-
     class Buffer
     {
         uint32_t m_ID;
         BufferType m_Type;
         BufferMode m_Mode;
-        uint32_t m_Size;
+        uint32_t m_ElementSize;
+        uint32_t m_Count;
 
     public:
         Buffer(BufferType type, BufferMode mode);
         ~Buffer();
-        void SetLayout(const std::vector<BufferElement>& layout);
-        void SetData(void* data, uint32_t size);
-        void InsertData(void* data, uint32_t offset, uint32_t size) const;
+        void SetData(void* data, uint32_t elementSize, uint32_t count);
+        void InsertData(void* data, uint32_t offset, uint32_t count) const;
 
-        inline void Bind() const;
-        inline void Unbind() const;
+        void Bind() const;
+        void BindAs(const BufferType& type) const;
+        void Unbind() const;
 
         inline BufferType GetType() const { return m_Type; }
         inline BufferMode GetMode() const { return m_Mode; }
-        inline uint32_t GetSize() const { return m_Size; }
+        inline uint32_t GetCount() const { return m_Count; }
+        inline uint32_t GetSize() const { return m_Count * m_ElementSize; }
+        inline uint32_t GetRawID() const { return m_ID; }
     };
 }

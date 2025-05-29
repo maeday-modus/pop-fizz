@@ -1,10 +1,8 @@
 #include "renderer.hpp"
+#include "logger.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
-#include <iostream>
-
 
 namespace fizz
 {
@@ -38,5 +36,11 @@ namespace fizz
     void Renderer::SetClearColor(double r, double g, double b)
     {
         glClearColor(r, g, b, 1.0);
+    }
+
+    void Renderer::DrawVertexArray(std::shared_ptr<VertexArray> vArray)
+    {   
+        vArray->Bind();
+        glDrawArrays(GL_TRIANGLES, 0, vArray->GetVertexBuffer()->GetCount() / 3);
     }
 }

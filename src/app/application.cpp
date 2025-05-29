@@ -20,14 +20,37 @@ namespace fizz
         // This is where we would set glfw callbacks
     }
 
+    Application::~Application()
+    {   // Detach all layers
+        while (m_Layers.size() > 0)
+            PopLayer();
+    }
+
     void Application::Run()
     {
         while (!m_Window.ShouldClose())
-        {
-            Renderer::ClearBuffers();
+        {   // Process layers
+            for (std::shared_ptr<Layer> layer : m_Layers)
+            {
+                layer->Tick();
+            }
 
+            // Swap buffers and poll for events
             m_Window.SwapPoll();
         }
+    }
+
+    void Application::PushLayer(std::shared_ptr<Layer> layer)
+    {
+        layer->OnAttach();
+        m_Layers.push_back(layer);
+    }
+
+    void Application::PopLayer()
+    {
+        std::shared_ptr<Layer> last = m_Layers[m_Layers.size() - 1];
+        last->OnDetach();
+        m_Layers.pop_back();
     }
 }
 

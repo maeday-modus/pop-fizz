@@ -11,15 +11,14 @@ namespace fizz
         COMPUTE
     };
     
-    class ShaderPart
+    struct ShaderPart
     {
-    public:
+        uint32_t ID;
+
         ShaderPart(const char* shaderCode, ShaderType type);
         ~ShaderPart();
 
         static uint32_t compileShader(const char* shaderCode, ShaderType type);
-        
-        uint32_t ID;
     };
 
 
@@ -32,7 +31,11 @@ namespace fizz
     class Shader
     {
     public:
-        Shader(std::vector<ShaderParam> shaderLayout);
+        Shader(const std::vector<ShaderParam>& shaderLayout);
+        ~Shader();
+
+        void Bind() const;
+        void Unbind() const;
 
     private:
         uint32_t m_Program;

@@ -7,34 +7,30 @@ namespace fizz
 {
     static uint32_t GetGLType(const BufferType& type)
     {
-        uint32_t r;
         switch(type)
         {   // convert to opengl buffer "mode" (type/location)
             case BufferType::VERTEX:
-                r = GL_ARRAY_BUFFER;
+                return GL_ARRAY_BUFFER;
             case BufferType::INDEX:
-                r = GL_ELEMENT_ARRAY_BUFFER;
+                return GL_ELEMENT_ARRAY_BUFFER;
             case BufferType::UNIFORM:
-                r = GL_UNIFORM_BUFFER;
+                return GL_UNIFORM_BUFFER;
             case BufferType::PIXEL:
-                r = GL_TEXTURE_BUFFER;
+                return GL_TEXTURE_BUFFER;
             case BufferType::STORAGE:
-                r = GL_SHADER_STORAGE_BUFFER;
+                return GL_SHADER_STORAGE_BUFFER;
         }
-        return r;
     }
 
     static uint32_t GetGLMode(const BufferMode& mode)
     {
-        uint32_t r;
         switch(mode)
         {   // get the opengl "usage" (i think mode works better here)
             case BufferMode::STATIC:
-                r = GL_STATIC_DRAW;
+                return GL_STATIC_DRAW;
             case BufferMode::DYNAMIC:
-                r = GL_DYNAMIC_DRAW;
+                return GL_DYNAMIC_DRAW;
         }
-        return r;
     }
 
     static uint32_t GetGLDataType(const DataType& type)
@@ -49,12 +45,11 @@ namespace fizz
                 return GL_BOOL;
             case DataType::Float: case DataType::Mat2: case DataType::Mat3: case DataType::Mat4:
                 return GL_FLOAT;
-
         }
     }
 
     Buffer::Buffer(BufferType type, BufferMode mode)
-        : m_Type(type), m_Mode(mode), m_Size(0)
+        : m_Type(type), m_Mode(mode), m_ElementSize(0), m_Count(0)
     {   // create opengl buffer object
         glCreateBuffers(1, &m_ID);
     }
@@ -64,51 +59,38 @@ namespace fizz
         glDeleteBuffers(1, &m_ID);
     }
 
-    void Buffer::SetLayout(const std::vector<BufferElement>& layout)
-    {   // calculate stride
-        uint32_t stride;
-        for (const BufferElement& element : layout)
-            stride += element.Count * DataTypeUtil::GetSize(element.Type);
 
-        Bind();
-        // map elements
-        int i = 0;
-        uint32_t offset = 0;
-        for (const BufferElement& element : layout)
-        {
-            glEnableVertexAttribArray(i);
-            glVertexAttribPointer(i, element.Count, GetGLDataType(element.Type),
-                    element.Normalized ? GL_TRUE : GL_FALSE, stride, (void*)offset);
-            i++;
-        }
-    }
-
-    void Buffer::SetData(void* data, uint32_t size)
+    void Buffer::SetData(void* data, uint32_t elementSize, uint32_t count)
     {   // Set new size
-        m_Size = size;
+        m_ElementSize = elementSize;
+        m_Count = count;
 
         Bind();
-        glBufferData(GetGLType(m_Type), m_Size, data, GetGLMode(m_Mode));
+        glBufferData(GetGLType(m_Type), m_Count * m_ElementSize, data, GetGLMode(m_Mode));
     }
 
-    void Buffer::InsertData(void* data, uint32_t offset, uint32_t size) const
+    void Buffer::InsertData(void* data, uint32_t offset, uint32_t count) const
     {   // check size
-        if (offset + size > m_Size)
-        {
-            Logger::LogWARN("Requested buffer insertion would overflow buffer. Data not sent to GPU.");
-            return;
-        }
+        Logger::ASSERT(GetSize() > 0,
+                "Cannot insert data into empty buffer");
+        Logger::ASSERT(offset + count * m_ElementSize <= GetSize(),
+                "Requested buffer insertion would overflow buffer. Data not sent to GPU.");
 
         Bind();
-        glBufferSubData(GetGLType(m_Type), offset, size, data);
+        glBufferSubData(GetGLType(m_Type), offset, count * m_ElementSize, data);
     }
 
-    inline void Buffer::Bind() const
+    void Buffer::Bind() const
     {
         glBindBuffer(GetGLType(m_Type), m_ID);
     }
 
-    inline void Buffer::Unbind() const
+    void Buffer::BindAs(const BufferType& type) const
+    {   // Hopefully useful for using compute shader output as vertex data
+        glBindBuffer(GetGLType(type), m_ID);
+    }
+
+    void Buffer::Unbind() const
     {
         glBindBuffer(GetGLType(m_Type), 0);
     }
