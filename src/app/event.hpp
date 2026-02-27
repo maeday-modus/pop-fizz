@@ -43,12 +43,21 @@ namespace fizz
 
     public:
         KeyEvent(const uint32_t& keyCode) : m_KeyCode(keyCode) {}
+
+        __FIZZ_EVENT_FLAGS(EventFlag::Application & EventFlag::Keyboard)
     };
 
     class KeyPressedEvent : public KeyEvent
     {
     public:
         KeyPressedEvent(const uint32_t& keyCode) : KeyEvent(keyCode) {}
-        __FIZZ_EVENT_FLAGS(EventFlag::Application & EventFlag::Keyboard & EventFlag::Begin)
+        __FIZZ_EVENT_FLAGS(KeyEvent::GetFlags() & EventFlag::Begin)
+    };
+
+    class KeyReleasedEvent : public KeyEvent
+    {
+    public:
+        KeyReleasedEvent(const uint32_t& keyCode) : KeyEvent(keyCode) {}
+        __FIZZ_EVENT_FLAGS(KeyEvent::GetFlags() & EventFlag::End)
     };
 }
