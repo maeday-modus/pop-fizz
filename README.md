@@ -9,7 +9,7 @@ We use GLFW and OpenGL for rendering.
 ## Building:
 Clone the repository
 ```bash
-$ git clone https://github.com/MiniFalafel/pop-fizz.git pop-fizz
+$ git clone https://github.com/maeday-modus/pop-fizz.git pop-fizz
 $ cd pop-fizz
 ```
 
