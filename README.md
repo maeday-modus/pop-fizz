@@ -9,21 +9,26 @@ We use GLFW and OpenGL for rendering.
 ## Building:
 Clone the repository
 ```bash
-$ git clone https://github.com/maeday-modus/pop-fizz.git pop-fizz
+$ git clone git@github.com:maeday-modus/pop-fizz.git pop-fizz
 $ cd pop-fizz
 ```
 
-#### Build dependencies:
-*   `clang`
+#### Dependencies:
+*   `clang++`
 *   `glfw`
+    > NOTE: if `glfw` isn't installed under `/usr/lib` and `/usr/include`, you can change where clang searches for it at the top of the `build` script file. This applies to all external library includes.
 
-Run the `build` script:
+#### BUILD
+From the project root directory, run the `build` script:
 ```bash
 $ ./build
 ```
+OR
+```bash
+$ bash ./build
+```
 
-The build script will create a hash of the file contents when run. 
-This means that it'll only re-build if the files have changed.
+The build script will try and detect whether changes have been made since the last build. 
 
 Optionally, you can pass the `-f` parameter to skip this hash check and rebuild anyway:
 ```bash
